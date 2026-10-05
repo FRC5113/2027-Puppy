@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from wpilib import Timer
 from wpilib.simulation import DifferentialDrivetrainSim
-from wpimath.geometry import Pose2d, Rotation2d
+from wpimath.geometry import Pose2d
 
 from puppy.subsystems.drivetrain.io.base_io import DrivetrainBaseIO
 from puppy.subsystems.drivetrain.constants import DrivetrainConstants
@@ -37,12 +37,6 @@ class DrivetrainSimIO(DrivetrainBaseIO):
         Returns the current simulated robot pose.
         """
         return self._diff_drive_sim.getPose()
-
-    def get_angle(self) -> Rotation2d:
-        """
-        Returns the angle of the differential drive sim.
-        """
-        return self._diff_drive_sim.getPose().rotation()
 
     def set_left_voltage(self, volts: float) -> None:
         """

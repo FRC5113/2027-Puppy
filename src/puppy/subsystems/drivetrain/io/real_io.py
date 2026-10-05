@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from phoenix5 import TalonSRX, ControlMode, NeutralMode
-from navx import AHRS
 
 from wpilib import RobotController
-from wpimath.geometry import Pose2d, Rotation2d
+from wpimath.geometry import Pose2d
 
 from puppy.subsystems.drivetrain.io.base_io import DrivetrainBaseIO
 from puppy.subsystems.drivetrain.constants import DrivetrainConstants
@@ -12,7 +11,7 @@ from puppy.subsystems.drivetrain.constants import DrivetrainConstants
 
 class DrivetrainRealIO(DrivetrainBaseIO):
     """
-    The real IO, containing actual hardware implementations for talonSRX's & a navX gyro.
+    The real IO, containing actual hardware implementations for talonSRX's.
     """
     def __init__(self) -> None:
         """
@@ -32,20 +31,11 @@ class DrivetrainRealIO(DrivetrainBaseIO):
         self._front_left_motor.setNeutralMode(NeutralMode.Brake)
         self._front_right_motor.setNeutralMode(NeutralMode.Brake)
 
-        self._gyro = AHRS.create_spi()
-        self._gyro.reset()
-
     def get_pose(self) -> Pose2d | None:
         """
-        Always returns `None` because no encoders can measure the pose of the robot.
+        Always returns `None` because no sensors can measure the pose of the real robot.
         """
         return None
-
-    def get_angle(self) -> Rotation2d:
-        """
-        Returns the angle of the gyro (radians).
-        """
-        return self._gyro.getRotation2d()
 
     def set_left_voltage(self, volts: float) -> None:
         """

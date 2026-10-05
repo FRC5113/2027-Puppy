@@ -10,7 +10,6 @@ requires-python = ">=3.10"
 dependencies = [
     "wpilib==2026.2.2",
     "robotpy-ctre==2026.1.0.1",
-    "robotpy-navx==2026.0.1.2",
 	"robotpy==2026.2.2"
 ]
 

@@ -3,8 +3,10 @@ from __future__ import annotations
 from wpilib import RobotController
 
 from wpimath.kinematics import DifferentialDriveKinematics, ChassisSpeeds
-from wpimath.geometry import Pose2d
+from wpimath.geometry import Pose2d, Pose3d
 from wpimath.units import percent
+
+from ntcore import NetworkTableInstance
 
 from puppy.subsystems.base import Subsystem
 from puppy.subsystems.drivetrain.constants import DrivetrainConstants
@@ -24,6 +26,11 @@ class Drivetrain(Subsystem):
 
         self._forward_percent = 0.0
         self._angular_percent = 0.0
+
+        # Used for telemetry to allow for the robot to be represented in 3D.
+        self._robot_pose_publisher = NetworkTableInstance.getDefault() \
+            .getStructTopic("/SmartDashboard/Drivetrain/RobotPose3d", Pose3d) \
+            .publish()
 
     def get_pose(self) -> Pose2d | None:
         """
@@ -45,12 +52,12 @@ class Drivetrain(Subsystem):
         self._forward_percent = forward_percent
         self._angular_percent = angular_percent
 
-    def update(self) -> None:
+    def _command_motor_voltages(self, forward_percent: float, angular_percent: float) -> None:
         """
-        Updates the state of the subsystem after all values were requested.
+        Commands motor voltages to the left and right motors given a forward percent & angular percent.
         """
-        vx = self._forward_percent * DrivetrainConstants.max_linear_speed
-        omega = self._angular_percent * DrivetrainConstants.max_angular_speed
+        vx = forward_percent * DrivetrainConstants.max_linear_speed
+        omega = angular_percent * DrivetrainConstants.max_angular_speed
 
         chassis = ChassisSpeeds(vx, 0.0, omega)
         wheel_speeds = self._kinematics.toWheelSpeeds(chassis)
@@ -65,5 +72,21 @@ class Drivetrain(Subsystem):
         self._io.set_left_voltage(left_voltage)
         self._io.set_right_voltage(right_voltage)
 
+    def _publish_telemetry(self) -> None:
+        """
+        Publishes all of the telemetry for the drivetrain / drivetrain IO.
+        """
+        pose = self.get_pose()
+        if pose is not None:
+            self._robot_pose_publisher.set(Pose3d(pose))
+
+    def update(self) -> None:
+        """
+        Updates the state of the subsystem after all values were requested.
+        """
+        self._command_motor_voltages(self._forward_percent, self._angular_percent)
+
         self._forward_percent = 0.0
         self._angular_percent = 0.0
+
+        self._publish_telemetry()

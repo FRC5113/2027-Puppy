@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from wpimath.geometry import Rotation2d, Pose2d
+from wpimath.geometry import Pose2d
 
 
 class DrivetrainBaseIO(ABC):
@@ -13,13 +13,6 @@ class DrivetrainBaseIO(ABC):
     def get_pose(self) -> Pose2d | None:
         """
         Returns the full robot pose of the drivetrain, if possible.
-        """
-        ...
-
-    @abstractmethod
-    def get_angle(self) -> Rotation2d:
-        """
-        Returns the angle of the gyro.
         """
         ...
 
