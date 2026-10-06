@@ -1,3 +1,0 @@
-wpilib==2026.2.2
-robotpy==2026.2.2
-robotpy-ctre==2026.1.0.1
