@@ -4,8 +4,8 @@ from wpilib import Timer
 from wpilib.simulation import DifferentialDrivetrainSim
 from wpimath.geometry import Pose2d
 
-from puppy.subsystems.drivetrain.io.base_io import DrivetrainBaseIO
-from puppy.subsystems.drivetrain.constants import DrivetrainConstants
+from subsystems.drivetrain.io.base_io import DrivetrainBaseIO
+from subsystems.drivetrain.constants import DrivetrainConstants
 
 
 class DrivetrainSimIO(DrivetrainBaseIO):

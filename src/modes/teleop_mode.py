@@ -3,7 +3,7 @@ from __future__ import annotations
 from wpilib import XboxController
 
 from mode_robot.modes import TeleopMode
-from puppy.subsystems.drivetrain import Drivetrain
+from subsystems.drivetrain import Drivetrain
 
 
 class Teleop(TeleopMode):

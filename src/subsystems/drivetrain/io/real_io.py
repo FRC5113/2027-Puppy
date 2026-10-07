@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from phoenix5 import TalonSRX, ControlMode, NeutralMode
+from phoenix5 import TalonSRX, ControlMode
 
 from wpilib import RobotController
 from wpimath.geometry import Pose2d
 
-from puppy.subsystems.drivetrain.io.base_io import DrivetrainBaseIO
-from puppy.subsystems.drivetrain.constants import DrivetrainConstants
+from subsystems.drivetrain.io.base_io import DrivetrainBaseIO
+from subsystems.drivetrain.constants import DrivetrainConstants
+
+from hardware.motor_config import MotorConfig
 
 
 class DrivetrainRealIO(DrivetrainBaseIO):
@@ -22,14 +24,10 @@ class DrivetrainRealIO(DrivetrainBaseIO):
         self._back_left_motor = TalonSRX(DrivetrainConstants.CAN.back_left)
         self._back_right_motor = TalonSRX(DrivetrainConstants.CAN.back_right)
 
-        self._front_right_motor.setInverted(True)
-        self._front_left_motor.setInverted(True)
-
-        self._back_left_motor.follow(self._front_left_motor)
-        self._back_right_motor.follow(self._front_right_motor)
-
-        self._front_left_motor.setNeutralMode(NeutralMode.Brake)
-        self._front_right_motor.setNeutralMode(NeutralMode.Brake)
+        MotorConfig().apply(self._front_left_motor)
+        MotorConfig().apply(self._back_left_motor)
+        MotorConfig(inverted=True).apply(self._front_right_motor)
+        MotorConfig(inverted=True).apply(self._back_right_motor)
 
     def get_pose(self) -> Pose2d | None:
         """
@@ -43,6 +41,7 @@ class DrivetrainRealIO(DrivetrainBaseIO):
         """
         battery_voltage = RobotController.getBatteryVoltage()
         self._front_left_motor.set(ControlMode.PercentOutput, volts / battery_voltage)
+        self._back_left_motor.set(ControlMode.PercentOutput, volts / battery_voltage)
 
     def set_right_voltage(self, volts: float) -> None:
         """
@@ -50,3 +49,4 @@ class DrivetrainRealIO(DrivetrainBaseIO):
         """
         battery_voltage = RobotController.getBatteryVoltage()
         self._front_right_motor.set(ControlMode.PercentOutput, volts / battery_voltage)
+        self._back_right_motor.set(ControlMode.PercentOutput, volts / battery_voltage)

@@ -28,7 +28,7 @@ class DrivetrainConstants:
         """
         Holds the CAN ids for all physical hardware.
         """
-        front_left = 1
-        front_right = 2
-        back_left = 3
-        back_right = 4
+        front_left = 11
+        front_right = 12
+        back_left = 13
+        back_right = 14

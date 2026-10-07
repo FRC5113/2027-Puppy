@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from mode_robot.modes import DisabledMode
 
-from puppy.subsystems.drivetrain import Drivetrain
+from subsystems.drivetrain import Drivetrain
 
 
 class Disabled(DisabledMode):

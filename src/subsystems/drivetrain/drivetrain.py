@@ -8,9 +8,9 @@ from wpimath.units import percent
 
 from ntcore import NetworkTableInstance
 
-from puppy.subsystems.base import Subsystem
-from puppy.subsystems.drivetrain.constants import DrivetrainConstants
-from puppy.subsystems.drivetrain.io.base_io import DrivetrainBaseIO
+from subsystems.base import Subsystem
+from subsystems.drivetrain.constants import DrivetrainConstants
+from subsystems.drivetrain.io.base_io import DrivetrainBaseIO
 
 
 class Drivetrain(Subsystem):

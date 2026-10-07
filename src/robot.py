@@ -4,13 +4,13 @@ from wpilib import XboxController, Field2d, SmartDashboard
 
 from mode_robot import ModeRobot
 
-from puppy.modes.teleop_mode import Teleop
-from puppy.modes.test_mode import Test
-from puppy.modes.autonomous_mode import Autonomous
-from puppy.modes.disabled_mode import Disabled
+from modes.teleop_mode import Teleop
+from modes.test_mode import Test
+from modes.autonomous_mode import Autonomous
+from modes.disabled_mode import Disabled
 
-from puppy.subsystems.drivetrain import Drivetrain
-from puppy.subsystems.drivetrain.io import DrivetrainSimIO, DrivetrainRealIO
+from subsystems.drivetrain import Drivetrain
+from subsystems.drivetrain.io import DrivetrainSimIO, DrivetrainRealIO
 
 
 class Puppy(ModeRobot):
