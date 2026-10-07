@@ -30,5 +30,5 @@ class DrivetrainConstants:
         """
         front_left = 11
         front_right = 12
-        back_left = 13
-        back_right = 14
+        back_right = 13
+        back_left = 14

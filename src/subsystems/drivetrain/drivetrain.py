@@ -12,11 +12,16 @@ from subsystems.base import Subsystem
 from subsystems.drivetrain.constants import DrivetrainConstants
 from subsystems.drivetrain.io.base_io import DrivetrainBaseIO
 
+from lemonlib.smart.preference import SmartPreference
+
 
 class Drivetrain(Subsystem):
     """
     The base of the robot that allows the bot to actually drive around.
     """
+    forward_scaler = SmartPreference(1.0)
+    angular_scaler = SmartPreference(1.0)
+
     def __init__(self, io: DrivetrainBaseIO) -> None:
         """
         Initializes the drivetrain with an IO implementation.
@@ -84,7 +89,10 @@ class Drivetrain(Subsystem):
         """
         Updates the state of the subsystem after all values were requested.
         """
-        self._command_motor_voltages(self._forward_percent, self._angular_percent)
+        forward_pct = float(self.forward_scaler * self._forward_percent)    # type: ignore[unknownType]
+        angular_pct = float(self.angular_scaler * self._angular_percent)    # type: ignore[unknownType]
+
+        self._command_motor_voltages(forward_pct, angular_pct)
 
         self._forward_percent = 0.0
         self._angular_percent = 0.0

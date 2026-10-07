@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from wpilib import XboxController, Field2d, SmartDashboard
+from wpilib import Field2d, SmartDashboard
 
 from mode_robot import ModeRobot
 
@@ -12,6 +12,8 @@ from modes.disabled_mode import Disabled
 from subsystems.drivetrain import Drivetrain
 from subsystems.drivetrain.io import DrivetrainSimIO, DrivetrainRealIO
 
+from lemonlib.control import LemonInput
+
 
 class Puppy(ModeRobot):
     """
@@ -21,7 +23,7 @@ class Puppy(ModeRobot):
         """
         Initializes all IOs, hardware, and subsystems for the robot.
         """
-        self.controller = XboxController(0)
+        self.controller = LemonInput(0)
 
         if self.isSimulation():
             self.drivetrain_io = DrivetrainSimIO()
