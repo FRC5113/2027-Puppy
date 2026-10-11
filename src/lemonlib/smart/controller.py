@@ -1,6 +1,8 @@
 from wpilib import SmartDashboard
 from wpiutil import Sendable, SendableBuilder
 
+from typing import Callable, Any
+
 
 class SmartController(Sendable):
     """Used as a general wrapper for a variety of controllers that may
@@ -8,7 +10,12 @@ class SmartController(Sendable):
     create these using a `SmartProfile`.
     """
 
-    def __init__(self, key: str, calculate_method, feedback_enabled):
+    def __init__(
+        self, 
+        key: str, 
+        calculate_method: Callable[[float, float], Any], 
+        feedback_enabled: bool
+    ) -> None:
         Sendable.__init__(self)
         self._calculate_method = calculate_method
         self.reference = 0

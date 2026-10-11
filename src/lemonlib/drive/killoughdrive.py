@@ -78,9 +78,9 @@ class KilloughDrive:
         x, y = self._apply_field_oriented_control(xSpeed, ySpeed, gyro_angle)
         speeds = self._calculate_wheel_speeds(x, y, omega)
 
-        self.front_left_motor.set_throttle(speeds[0])
-        self.front_right_motor.set_throttle(speeds[1])
-        self.back_motor.set_throttle(speeds[2])
+        self.front_left_motor.set(speeds[0])
+        self.front_right_motor.set(speeds[1])
+        self.back_motor.set(speeds[2])
 
     def drive_polar(self, magnitude: float, angle: float, zRotation: float) -> None:
         """Drive method for Killough platform using polar coordinates.

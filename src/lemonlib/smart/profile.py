@@ -15,7 +15,12 @@ from wpimath.trajectory import TrapezoidProfile, TrapezoidProfileRadians
 from wpimath.units import meters, seconds
 from wpiutil import Sendable, SendableBuilder
 
+from functools import wraps
+from typing import Callable, Optional
+
 from .controller import SmartController
+
+_ControllerFactory = Callable[["SmartProfile", str, Optional[bool]], SmartController]
 
 
 class SmartProfile(Sendable):
@@ -69,7 +74,7 @@ class SmartProfile(Sendable):
             builder.addDoubleProperty(
                 gain_key,
                 (lambda key=gain_key: self.gains[key]),
-                (lambda value, key=gain_key: self._set_gain(key, value)),
+                (lambda value, key=gain_key: self._set_gain(key, float(value))),
             )
 
     def _set_gain(self, key: str, value: float):
@@ -77,13 +82,19 @@ class SmartProfile(Sendable):
         if self.tuning_enabled:
             Preferences.setDouble(f"{self.profile_key}_{key}", value)
 
-    def _requires(requirements: set[str]):
-        def inner(func):
-            def wrapper(self, key, feedback_enabled=None):
+    @staticmethod
+    def _requires(
+        requirements: set[str],
+    ) -> Callable[[_ControllerFactory], _ControllerFactory]:
+        def inner(func: _ControllerFactory) -> _ControllerFactory:
+            @wraps(func)
+            def wrapper(
+                self: "SmartProfile",
+                key: str,
+                feedback_enabled: Optional[bool] = None,
+            ) -> SmartController:
                 missing_reqs = requirements - set(self.gains.keys())
-                assert len(missing_reqs) == 0, (
-                    f"Requires gains: {', '.join(missing_reqs)}"
-                )
+                assert len(missing_reqs) == 0, f"Requires gains: {', '.join(missing_reqs)}"
                 return func(self, key, feedback_enabled)
 
             return wrapper
@@ -92,7 +103,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kP", "kI", "kD"})
     def create_pid_controller(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a PID controller.
         Requires kP, kI, kD, [kMinInput, kMaxInput optional]
@@ -207,7 +218,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kP", "kI", "kD", "kMaxV", "kMaxA"})
     def create_profiled_pid_controller(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a profiled PID controller.
         Requires kP, kI, kD, kMaxV, kMaxA, [kMinInput, kMaxInput optional]
@@ -262,7 +273,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kS", "kV"})
     def create_simple_feedforward(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a simple DC motor feedforward controller.
         Requires kS, kV, [kA optional]
@@ -280,7 +291,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kP", "kI", "kD", "kS", "kV"})
     def create_flywheel_controller(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a PID controller combined with a DC motor feedforward controller.
         Requires kP, kI, kD, kS, kV, [kA optional]
@@ -301,7 +312,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kP", "kI", "kD", "kS", "kV", "kMaxV", "kMaxA"})
     def create_turret_controller(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a profiled PID controller combined with a DC motor feedforward controller.
         Requires kP, kI, kD, kS, kV, [kA, kMinInput, kMaxInput optional]
@@ -320,7 +331,7 @@ class SmartProfile(Sendable):
             self.gains["kA"] if "kA" in self.gains else 0,
         )
 
-        def calculate(y, r):
+        def calculate(y: float, r: float):
             pid_output = pid.calculate(y, r)
             setpoint = pid.getSetpoint()
             # add acceleration eventually
@@ -335,7 +346,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kP", "kI", "kD", "kS", "kG", "kV", "kMaxV", "kMaxA"})
     def create_elevator_controller(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a profiled PID controller combined with an elevator feedforward controller.
         Requires kP, kI, kD, kS, kV, kG, [kA optional]
@@ -353,7 +364,7 @@ class SmartProfile(Sendable):
             self.gains["kA"] if "kA" in self.gains else 0,
         )
 
-        def calculate(y, r):
+        def calculate(y: float, r: float):
             pid_output = pid.calculate(y, r)
             setpoint = pid.getSetpoint()
             # add acceleration eventually
@@ -368,7 +379,7 @@ class SmartProfile(Sendable):
 
     @_requires({"kP", "kI", "kD", "kS", "kG", "kV", "kMaxV", "kMaxA"})
     def create_arm_controller(
-        self, key: str, feedback_enabled: bool = None
+        self, key: str, feedback_enabled: bool | None = None
     ) -> SmartController:
         """Creates a profiled PID controller combined with an arm feedforward controller.
         Requires kP, kI, kD, kS, kV, kG, [kA optional]
@@ -387,8 +398,8 @@ class SmartProfile(Sendable):
         )
 
         def calculate(
-            y,
-            r,
+            y: float,
+            r: float,
         ):
             pid_output = pid.calculate(y, r)
             setpoint = pid.getSetpoint()

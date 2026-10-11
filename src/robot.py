@@ -5,12 +5,11 @@ from wpilib import Field2d, SmartDashboard
 from mode_robot import ModeRobot
 
 from modes.teleop_mode import Teleop
-from modes.test_mode import Test
-from modes.autonomous_mode import Autonomous
 from modes.disabled_mode import Disabled
 
-from subsystems.drivetrain import Drivetrain
-from subsystems.drivetrain.io import DrivetrainSimIO, DrivetrainRealIO
+from subsystems.drivetrain.drivetrain import Drivetrain
+from subsystems.drivetrain.io.real_io import DrivetrainRealIO
+from subsystems.drivetrain.io.sim_io import DrivetrainSimIO
 
 from lemonlib.control import LemonInput
 
@@ -37,9 +36,7 @@ class Puppy(ModeRobot):
 
         super().__init__(
             teleop_mode=Teleop(self.drivetrain, self.controller),
-            autonomous_mode=Autonomous(),
             disabled_mode=Disabled(self.drivetrain),
-            test_mode=Test()
         )
 
     def robot_periodic(self) -> None:

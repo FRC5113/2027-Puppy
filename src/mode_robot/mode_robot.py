@@ -24,10 +24,10 @@ class ModeRobot(TimedRobot):
     """
     def __init__(
         self, 
-        teleop_mode: TeleopMode,
-        autonomous_mode: AutonomousMode,
-        disabled_mode: DisabledMode,
-        test_mode: TestMode,
+        teleop_mode: TeleopMode = TeleopMode(),
+        autonomous_mode: AutonomousMode = AutonomousMode(),
+        disabled_mode: DisabledMode = DisabledMode(),
+        test_mode: TestMode = TestMode(),
         period: float = 0.02,
     ) -> None:
         """

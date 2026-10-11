@@ -5,14 +5,13 @@ from typing import List
 from wpilib import DriverStation, SmartDashboard, Timer
 from wpiutil import Sendable, SendableBuilder
 
-from .elastic import Notification, send_notification
+from .elastic import NotificationLevel, Notification, send_notification
 
 
 class AlertType(Enum):
     """
     Enum representing the severity level of an alert.
     """
-
     ERROR = 0
     WARNING = 1
     INFO = 2
@@ -24,7 +23,6 @@ class Alert:
 
     Alerts can be activated, deactivated, or updated with new text.
     """
-
     def __init__(
         self, text: str, type: AlertType, timeout: float = 0.0, elasticnoti: bool = True
     ):
@@ -57,7 +55,7 @@ class Alert:
             self.active_start_time = Timer.getFPGATimestamp()
 
             # Log the alert based on its type.
-            match self.type:
+            match self.type.value:
                 case AlertType.ERROR.value:
                     AlertManager.logger.error(self.text)
                 case AlertType.WARNING.value:
@@ -65,9 +63,17 @@ class Alert:
                 case AlertType.INFO.value:
                     AlertManager.logger.info(self.text)
 
+            match self.type.name:
+                case 'ERROR':
+                    level = NotificationLevel.ERROR
+                case 'WARNING':
+                    level = NotificationLevel.WARNING
+                case 'INFO':
+                    level = NotificationLevel.INFO
+
             # Send notification to Elastic dashboard.
             notification = Notification(
-                level=self.type.name,
+                level=level,
                 title="Robot Alert",
                 description=self.text,
                 display_time=int(self.timeout * 1000) if self.timeout > 0 else 3000,
@@ -118,9 +124,9 @@ class AlertManager(Sendable):
     """
 
     alerts: List[Alert] = []
-    logger: Logger = None
+    logger: Logger
 
-    def __init__(self, logger, enabled: bool = True):
+    def __init__(self, logger: Logger, enabled: bool = True):
         """
         Initialize the AlertManager.
 
@@ -158,7 +164,7 @@ class AlertManager(Sendable):
         Returns:
             List[str]: List of alert messages.
         """
-        alerts = []
+        alerts: list[Alert] = []
         timestamp = Timer.getFPGATimestamp()
         for alert in AlertManager.alerts:
             if not alert.active:

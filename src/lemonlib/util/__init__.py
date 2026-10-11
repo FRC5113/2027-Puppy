@@ -123,13 +123,13 @@ def cubic_curve(
     return curve(lambda x: scalar * x**3, offset, deadband, max_mag, absolute_offset)
 
 
-def SnapX(x, y) -> float:
+def SnapX(x: float, y: float) -> float:
     if abs(x) > abs(y):
         return x
     return 0.0
 
 
-def SnapY(x, y) -> float:
+def SnapY(x: float, y: float) -> float:
     if abs(y) > abs(x):
         return y
     return 0.0

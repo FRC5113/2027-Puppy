@@ -17,7 +17,7 @@ class Notification:
 
     def __init__(
         self,
-        level=NotificationLevel.INFO,
+        level: NotificationLevel = NotificationLevel.INFO,
         title: str = "",
         description: str = "",
         display_time: int = 3000,
@@ -50,7 +50,7 @@ __notification_topic = None
 __notification_publisher = None
 
 
-def send_notification(notification: Notification):
+def send_notification(notification: Notification) -> None:
     """
     Sends an notification notification to the Elastic dashboard.
     The notification is serialized as a JSON string before being published.
@@ -70,16 +70,13 @@ def send_notification(notification: Notification):
         )
     if not __notification_publisher:
         __notification_publisher = __notification_topic.publish(
-            PubSubOptions(send_all=True, keep_duplicates=True)
+            PubSubOptions(sendAll=True, keepDuplicates=True)
         )
 
     level = notification.level
-    if isinstance(level, NotificationLevel):
-        level = level.value
-
     try:
         __notification_publisher.set(
-            json.dumps(
+            [json.dumps(
                 {
                     "level": level,
                     "title": notification.title,
@@ -88,13 +85,13 @@ def send_notification(notification: Notification):
                     "width": notification.width,
                     "height": notification.height,
                 }
-            )
+            )]
         )
     except Exception as e:
         print(f"Error serializing notification: {e}")
 
 
-def select_tab(tab_name: str):
+def select_tab(tab_name: str) -> None:
     """
     Selects the tab of the dashboard with the given name.
     If no tab matches the name, this will have no effect on the widgets or tabs in view.
@@ -112,13 +109,13 @@ def select_tab(tab_name: str):
         )
     if not __selected_tab_publisher:
         __selected_tab_publisher = __selected_tab_topic.publish(
-            PubSubOptions(keep_duplicates=True)
+            PubSubOptions(keepDuplicates=True)
         )
 
-    __selected_tab_publisher.set(tab_name)
+    __selected_tab_publisher.set([tab_name])
 
 
-def select_tab_index(tab_index: int):
+def select_tab_index(tab_index: int) -> None:
     """
     Selects the tab of the dashboard at the given index.
     If this index is greater than or equal to the number of tabs, this will have no effect.
@@ -129,7 +126,7 @@ def select_tab_index(tab_index: int):
     select_tab(str(tab_index))
 
 
-def start_remote_layout():
+def start_remote_layout() -> None:
     """
     Starts the remote layout server for the Elastic dashboard.
     This allows the dashboard to be controlled remotely via a web interface.

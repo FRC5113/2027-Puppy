@@ -6,7 +6,7 @@ from wpilib import AddressableLED, Color, RobotController, Timer
 
 
 class LEDController:
-    def __init__(self, pwm_port: int, length: int):
+    def __init__(self, pwm_port: int, length: int) -> None:
         """
         Initializes the LED controller.
 
@@ -24,18 +24,18 @@ class LEDController:
         self._move_frame_initialized = False
         self._last_lit_indices: list[int] = []
 
-    def _reset_move_cache(self):
+    def _reset_move_cache(self) -> None:
         self._move_frame_initialized = False
         self._last_lit_indices.clear()
 
-    def _clear_all(self):
+    def _clear_all(self) -> None:
         for led in self.buffer:
             led.setRGB(0, 0, 0)
 
-    def _write_data(self, index: SupportsIndex, color: Color):
+    def _write_data(self, index: SupportsIndex, color: Color) -> None:
         self.buffer[int(index)].setLED(color)
 
-    def set_solid_color(self, color: tuple[int, int, int]):
+    def set_solid_color(self, color: tuple[int, int, int]) -> None:
         """Sets the entire LED strip to a solid color."""
         if color == self.solid_color:
             return
@@ -46,7 +46,7 @@ class LEDController:
             led.setRGB(r, g, b)
         self.led.setData(self.buffer)
 
-    def set_pixel(self, index: int, color: tuple[int, int, int]):
+    def set_pixel(self, index: int, color: tuple[int, int, int]) -> None:
         """Sets the color of a single LED pixel."""
         self._reset_move_cache()
         self.solid_color = None
@@ -56,7 +56,7 @@ class LEDController:
 
     def set_gradient(
         self, start_color: tuple[int, int, int], end_color: tuple[int, int, int]
-    ):
+    ) -> None:
         """Custom preset that Sets a gradient from start_color to end_color across the LED strip."""
         self._reset_move_cache()
         start_r, start_g, start_b = start_color
@@ -72,7 +72,7 @@ class LEDController:
         self.led.setData(buffer)
         self.solid_color = None
 
-    def static_rainbow(self, offset: int = 0):
+    def static_rainbow(self, offset: int = 0) -> None:
         """Custom preset that Creates a rainbow effect across the LED strip.
 
         The offset parameter (in degrees) can be used to animate the rainbow.
@@ -91,7 +91,7 @@ class LEDController:
         self.led.setData(buffer)
         self.solid_color = None
 
-    def scolling_rainbow(self, speed: float = 1):
+    def scolling_rainbow(self, speed: float = 1) -> None:
         """Custom preset that Creates a rainbow effect across the LED strip.
 
         The offset parameter (in degrees) can be used to animate the rainbow.
@@ -115,9 +115,9 @@ class LEDController:
         colors: list[tuple[int, int, int]] | tuple[int, int, int],
         size: int = 1,
         hertz: wpimath.units.hertz = 1,
-    ):
+    ) -> None:
         """Moves a block of LEDs across the strip using RobotController.getTime() for timing."""
-        if isinstance(colors[0], int):
+        if isinstance(colors, tuple) and len(colors) == 3:
             colors = [colors]
 
         # Get the current time
@@ -127,7 +127,7 @@ class LEDController:
 
         # Compute the current position with slower movement
         position = int(current_time * hertz) % length
-
+        
         if not self._move_frame_initialized:
             self._clear_all()
             self._move_frame_initialized = True
@@ -155,14 +155,14 @@ class LEDController:
         colors: list[tuple[int, int, int]] | tuple[int, int, int],
         size: int = 1,
         hertz: wpimath.units.hertz = 1,
-    ):
+    ) -> None:
         """Moves a fixed-size multicolor block across the strip using RobotController.getTime() for timing."""
         current_time = Timer.getTimestamp()
         length = self.length
         buffer = self.buffer
 
         # Handle single color input
-        if isinstance(colors[0], int):
+        if isinstance(colors, tuple) and len(colors) == 3:
             colors = [colors]
 
         num_colors = len(colors)
@@ -197,7 +197,7 @@ class LEDController:
         color1: tuple[int, int, int],
         color2: tuple[int, int, int] = (0, 0, 0),
         hertz: wpimath.units.hertz = 2,
-    ):
+    ) -> None:
         """Blinks the entire strip between two colors at the given frequency.
 
         :param color1: The first RGB color.
@@ -211,7 +211,7 @@ class LEDController:
         else:
             self.set_solid_color(color2)
 
-    def clear(self):
+    def clear(self) -> None:
         """Turns off all LEDs."""
         self._reset_move_cache()
         self.solid_color = None

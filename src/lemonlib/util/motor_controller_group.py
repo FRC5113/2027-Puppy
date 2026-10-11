@@ -1,44 +1,52 @@
 from wpilib.interfaces import MotorController
 
+from typing import SupportsFloat, SupportsIndex, Iterable
+
 
 class MotorControllerGroup(MotorController):
-    isInverted: bool = False
+    """
+    A grouping of motor controllers that follow a lead motor controller.
+    All commands / configurations to a motor controller are commanded to its followers.
+    """
+    _is_inverted: bool = False
 
-    instances: int = 0
-
-    def __init__(self, motorController: MotorController, *args: MotorController):
-        """Create a new MotorControllerGroup with the provided MotorControllers.
-
-        :param args: MotorControllers to add
+    def __init__(
+        self, 
+        lead_controller: MotorController, 
+        following_controllers: Iterable[MotorController]
+    ) -> None:
         """
+        Creates a new MotorControllerGroup with the provided MotorControllers.
 
+        Args:
+            lead_controller: The leading motor controller that all other controllers will follow.
+            following_controllers: The following motor controllers.
+        """
         MotorController.__init__(self)
 
-        self._motor_controllers = [motorController] + list(args)
+        self._motor_controllers = [lead_controller] + list(following_controllers)
 
-        self.isInverted = False
+        self._is_inverted = False
 
-        MotorControllerGroup.instances += 1
-
-    def set(self, speed: float):
+    def set(self, speed: SupportsFloat | SupportsIndex) -> None:
         for mc in self._motor_controllers:
-            mc.set(-speed if self.isInverted else speed)
+            mc.set(-float(speed) if self._is_inverted else float(speed))
 
-    def setVoltage(self, outputVolts: float):
+    def setVoltage(self, output: float):
         for mc in self._motor_controllers:
-            mc.setVoltage(-outputVolts if self.isInverted else outputVolts)
+            mc.setVoltage(-output if self._is_inverted else output)
 
-    def get(self):
+    def get(self) -> float:
         if len(self._motor_controllers) > 0:
             speed = self._motor_controllers[0].get()
-            return -speed if self.isInverted else speed
+            return -speed if self._is_inverted else speed
         return 0.0
 
-    def setInverted(self, isInverted: bool) -> None:
-        self.isInverted = isInverted
+    def setInverted(self, isInverted: bool = False) -> None:
+        self._is_inverted = isInverted
 
     def getInverted(self) -> bool:
-        return self.isInverted
+        return self._is_inverted
 
     def disable(self) -> None:
         for mc in self._motor_controllers:

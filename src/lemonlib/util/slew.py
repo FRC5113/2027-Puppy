@@ -6,7 +6,12 @@ class AsymmetricSlewLimiter:
     slew rate limiter with separate rising and falling rates.
     """
 
-    def __init__(self, rising_rate, falling_rate, initial_value=0.0):
+    def __init__(
+        self, 
+        rising_rate: float, 
+        falling_rate: float, 
+        initial_value: float = 0.0
+    ) -> None:
         """
         Args:
             rising_rate (float): Maximum rate of change when signal is increasing (units/sample)
@@ -18,11 +23,11 @@ class AsymmetricSlewLimiter:
         self.prev_value = initial_value
         self.prev_time = RobotController.getTime() / 1e6
 
-    def get_time_seconds(self):
+    def get_time_seconds(self) -> float:
         """Get the time in seconds"""
         return RobotController.getTime() / 1e6
 
-    def calculate(self, input_signal):
+    def calculate(self, input_signal: float) -> float:
         """
         Process input signal through slew rate limiter.
 
@@ -59,10 +64,10 @@ class AsymmetricSlewLimiter:
         self.prev_value += change
         return self.prev_value
 
-    def lastValue(self):
+    def lastValue(self) -> float:
         """Get the last output value of the limiter."""
         return self.prev_value
 
-    def reset(self, value=0.0):
+    def reset(self, value: float = 0.0) -> None:
         """Reset the limiter to a specific value."""
         self.prev_value = value

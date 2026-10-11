@@ -1,21 +1,21 @@
 from wpilib.drive import DifferentialDrive
+from wpilib.interfaces._interfaces import MotorController
 
 from lemonlib.smart.preference import SmartPreference
 
 
 class SwagDrive:
-    maxspeed = SmartPreference(0.8)
-    defspeed = SmartPreference(0.5)
-    swagadd = SmartPreference(1)
-    maxswag = SmartPreference(9000)
-    minswag = SmartPreference(0.1)
-    swagmulti = SmartPreference(10)
-
-    def __init__(self, leftMotor, rightMotor):
-
+    def __init__(self, leftMotor: MotorController, rightMotor: MotorController) -> None:
         self.leftMotor = leftMotor
         self.rightMotor = rightMotor
         self.robotDrive = DifferentialDrive(self.leftMotor, self.rightMotor)
+
+        self.maxspeed = SmartPreference("Swag/MaxSpeed", 0.8)
+        self.defspeed = SmartPreference("Swag/DefSpeed", 0.5)
+        self.swagadd = SmartPreference("Swag/SwagAdd", 1)
+        self.maxswag = SmartPreference("Swag/MaxSwag", 9000)
+        self.minswag = SmartPreference("Swag/MinSwag", 0.1)
+        self.swagmulti = SmartPreference("Swag/SwagMulti", 10)
 
         # Swag-related variables
         self.swagLevel = 0
@@ -23,7 +23,7 @@ class SwagDrive:
         self.oldMove = 0
         self.oldRotate = 0
 
-    def Drive(self, moveValue, rotateValue):
+    def Drive(self, moveValue: float, rotateValue: float):
         """Custom drive function that incorporates 'swag' logic."""
 
         SWAG_BARRIER = self.minswag
@@ -38,17 +38,17 @@ class SwagDrive:
         rotateDiff = abs(rotateValue - self.oldRotate)
 
         if self.swagPeriod == 0:
-            if moveDiff < SWAG_BARRIER:
-                moveToSend = (moveDiff * SWAG_MULTIPLIER) + moveValue
+            if moveDiff < SWAG_BARRIER.get():
+                moveToSend = (moveDiff * SWAG_MULTIPLIER.get()) + moveValue
             else:
-                self.swagLevel += SWAG_ADD
+                self.swagLevel += SWAG_ADD.get()
 
-            if rotateDiff < SWAG_BARRIER:
-                rotateToSend = (rotateDiff * SWAG_MULTIPLIER) + rotateValue
+            if rotateDiff < SWAG_BARRIER.get():
+                rotateToSend = (rotateDiff * SWAG_MULTIPLIER.get()) + rotateValue
             else:
-                self.swagLevel += SWAG_ADD
+                self.swagLevel += SWAG_ADD.get()
 
-            if self.swagLevel > MAX_SWAG_LEVEL:
+            if self.swagLevel > MAX_SWAG_LEVEL.get():
                 self.swagPeriod = SWAG_PERIOD
                 self.swagLevel = 0
 
@@ -60,7 +60,7 @@ class SwagDrive:
         self.rotatediff = rotateDiff
         self.movediff = moveDiff
         # Call arcadeDrive with modified move and rotate values
-        self.robotDrive.arcade_drive(moveToSend, rotateToSend)
+        self.robotDrive.arcadeDrive(moveToSend, rotateToSend)
 
         self.oldMove = moveValue
         self.oldRotate = rotateValue

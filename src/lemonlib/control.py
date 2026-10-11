@@ -1,7 +1,7 @@
 import math
 from enum import IntEnum
 
-from wpilib import DriverStation, RobotBase
+from wpilib import DriverStation, RobotBase, SendableBuilderImpl
 from wpilib.interfaces import GenericHID
 
 RIGHT_RUMBLE = GenericHID.RumbleType.kRightRumble
@@ -14,8 +14,10 @@ class LemonInput(GenericHID):
     and PS5 controllers allowing automatic
     or manual detection and use in code.
     """
-
     class xbox_buttons(IntEnum):
+        """
+        Holds all of the button / joystick port values for an xbox controller.
+        """
         kLeftTrigger = 2
         kLeftX = 0
         kLeftY = 1
@@ -34,6 +36,9 @@ class LemonInput(GenericHID):
         kY = 4
 
     class ps5_buttons(IntEnum):
+        """
+        Holds all of the button / joystick port values for a ps5 controller.
+        """
         kLeftTrigger = 3
         kLeftX = 0
         kLeftY = 1
@@ -52,6 +57,9 @@ class LemonInput(GenericHID):
         kY = 4
 
     class legion_buttons(IntEnum):
+        """
+        Holds all of the button / joystick port values for an legion controller.
+        """
         kLeftTrigger = 2
         kLeftX = 0
         kLeftY = 1
@@ -69,9 +77,10 @@ class LemonInput(GenericHID):
         kX = 3
         kY = 4
 
-    def __init__(self, port: int = None, type: str = "auto"):
+    def __init__(self, port: int | None = None, type: str = "auto") -> None:
         """
         Initializes the control object with the specified port number and type.
+
         Args:
             port (int, optional): The port number of the controller. If unset,
                 chooses first controller matching type.
@@ -114,17 +123,17 @@ class LemonInput(GenericHID):
             self.button_map = self.ps5_buttons
             self.contype = "PS5"
 
-    def getType(self):
+    def getControllerType(self) -> str:
         """Returns the type of controller (Xbox or PS5)."""
         return self.contype
 
     """Xbox funcs but still work with PS5 just for ease of use"""
 
-    def getLeftBumper(self):
+    def getLeftBumper(self) -> bool:
         """Returns the state of the left bumper button."""
         return self.getRawButton(self.button_map.kLeftBumper.value)
 
-    def getRightBumper(self):
+    def getRightBumper(self) -> bool:
         """
         Returns the state of the right bumper button.
 
@@ -133,7 +142,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kRightBumper.value)
 
-    def getStartButton(self):
+    def getStartButton(self) -> bool:
         """
         Returns the state of the start button.
 
@@ -142,7 +151,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kStart.value)
 
-    def getBackButton(self):
+    def getBackButton(self) -> bool:
         """
         Returns the state of the back button.
 
@@ -151,7 +160,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kBack.value)
 
-    def getAButton(self):
+    def getAButton(self) -> bool:
         """
         Returns the state of the 'A' button.
 
@@ -160,7 +169,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kA.value)
 
-    def getBButton(self):
+    def getBButton(self) -> bool:
         """
         Returns the state of the 'B' button.
 
@@ -169,7 +178,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kB.value)
 
-    def getXButton(self):
+    def getXButton(self) -> bool:
         """
         Returns the state of the 'X' button.
 
@@ -178,7 +187,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kX.value)
 
-    def getYButton(self):
+    def getYButton(self) -> bool:
         """
         Returns the state of the 'Y' button.
 
@@ -187,7 +196,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kY.value)
 
-    def getLeftStickButton(self):
+    def getLeftStickButton(self) -> bool:
         """
         Returns the state of the left stick button.
 
@@ -196,7 +205,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawButton(self.button_map.kLeftStick.value)
 
-    def getRightStickButton(self):
+    def getRightStickButton(self) -> bool:
         """
         Returns the state of the right stick button.
 
@@ -225,43 +234,43 @@ class LemonInput(GenericHID):
 
     """PS5 funcs still work with Xbox just for ease of use"""
 
-    def getL1Button(self):
+    def getL1Button(self) -> bool:
         """Returns the state of the L1 button."""
         return self.getRawButton(self.button_map.kLeftBumper.value)
 
-    def getR1Button(self):
+    def getR1Button(self) -> bool:
         """Returns the state of the R1 button."""
         return self.getRawButton(self.button_map.kRightBumper.value)
 
-    def getOptionsButton(self):
+    def getOptionsButton(self) -> bool:
         """Returns the state of the Options button."""
         return self.getRawButton(self.button_map.kStart.value)
 
-    def getCreateButton(self):
+    def getCreateButton(self) -> bool:
         """Returns the state of the Create button."""
         return self.getRawButton(self.button_map.kBack.value)
 
-    def getCrossButton(self):
+    def getCrossButton(self) -> bool:
         """Returns the state of the Cross (X) button."""
         return self.getRawButton(self.button_map.kA.value)
 
-    def getCircleButton(self):
+    def getCircleButton(self) -> bool:
         """Returns the state of the Circle (O) button."""
         return self.getRawButton(self.button_map.kB.value)
 
-    def getSquareButton(self):
+    def getSquareButton(self) -> bool:
         """Returns the state of the Square button."""
         return self.getRawButton(self.button_map.kX.value)
 
-    def getTriangleButton(self):
+    def getTriangleButton(self) -> bool:
         """Returns the state of the Triangle button."""
         return self.getRawButton(self.button_map.kY.value)
 
-    def getL3(self):
+    def getL3(self) -> bool:
         """Returns the state of the L3 (left stick) button."""
         return self.getRawButton(self.button_map.kLeftStick.value)
 
-    def getR3(self):
+    def getR3(self) -> bool:
         """Returns the state of the R3 (right stick) button."""
         return self.getRawButton(self.button_map.kRightStick.value)
 
@@ -275,7 +284,7 @@ class LemonInput(GenericHID):
 
     """Both Xbox and PS5 funcs"""
 
-    def setRumbleLeft(self, value: float):
+    def setRumbleLeft(self, value: float) -> None:
         """
         Sets the rumble of the controller.
 
@@ -284,7 +293,7 @@ class LemonInput(GenericHID):
         """
         self.setRumble(LEFT_RUMBLE, value)
 
-    def setRumbleRight(self, value: float):
+    def setRumbleRight(self, value: float) -> None:
         """
         Sets the rumble of the controller.
 
@@ -329,7 +338,7 @@ class LemonInput(GenericHID):
         """
         return self.getRawAxis(self.button_map.kRightY)
 
-    def __pov_xy(self):
+    def __pov_xy(self) -> tuple[float, float]:
         """
         Returns the X and Y values of the POV as a tuple using sin and cos,
         or (0, 0) if the POV is not pressed (-1).
@@ -391,7 +400,7 @@ class LemonInput(GenericHID):
         """
         return self.__pov_xy()[1]
 
-    def initSendable(self, builder):
+    def initSendable(self, builder: SendableBuilderImpl):
         """
         Initializes the sendable for the LemonInput class.
 
@@ -399,38 +408,38 @@ class LemonInput(GenericHID):
             builder: The sendable builder.
         """
         builder.setSmartDashboardType("LemonInput")
-        builder.addStringProperty("Type", lambda: self.contype, lambda: None)
+        builder.addStringProperty("Type", lambda: self.contype, lambda _: None)
         builder.addBooleanProperty(
-            "LeftBumper", lambda: self.getLeftBumper(), lambda: None
+            "LeftBumper", lambda: self.getLeftBumper(), lambda _: None
         )
         builder.addBooleanProperty(
-            "RightBumper", lambda: self.getRightBumper(), lambda: None
+            "RightBumper", lambda: self.getRightBumper(), lambda _: None
         )
         builder.addBooleanProperty(
-            "StartButton", lambda: self.getStartButton(), lambda: None
+            "StartButton", lambda: self.getStartButton(), lambda _: None
         )
         builder.addBooleanProperty(
-            "BackButton", lambda: self.getBackButton(), lambda: None
+            "BackButton", lambda: self.getBackButton(), lambda _: None
         )
-        builder.addBooleanProperty("AButton", lambda: self.getAButton(), lambda: None)
-        builder.addBooleanProperty("BButton", lambda: self.getBButton(), lambda: None)
-        builder.addBooleanProperty("XButton", lambda: self.getXButton(), lambda: None)
-        builder.addBooleanProperty("YButton", lambda: self.getYButton(), lambda: None)
+        builder.addBooleanProperty("AButton", lambda: self.getAButton(), lambda _: None)
+        builder.addBooleanProperty("BButton", lambda: self.getBButton(), lambda _: None)
+        builder.addBooleanProperty("XButton", lambda: self.getXButton(), lambda _: None)
+        builder.addBooleanProperty("YButton", lambda: self.getYButton(), lambda _: None)
         builder.addBooleanProperty(
-            "LStickButton", lambda: self.getLeftStickButton(), lambda: None
+            "LStickButton", lambda: self.getLeftStickButton(), lambda _: None
         )
         builder.addBooleanProperty(
-            "RStickButton", lambda: self.getRightStickButton(), lambda: None
+            "RStickButton", lambda: self.getRightStickButton(), lambda _: None
         )
-        builder.addDoubleProperty("LeftX", lambda: self.getLeftX(), lambda: None)
-        builder.addDoubleProperty("LeftY", lambda: self.getLeftY(), lambda: None)
-        builder.addDoubleProperty("RightX", lambda: self.getRightX(), lambda: None)
-        builder.addDoubleProperty("RightY", lambda: self.getRightY(), lambda: None)
+        builder.addDoubleProperty("LeftX", lambda: self.getLeftX(), lambda _: None)
+        builder.addDoubleProperty("LeftY", lambda: self.getLeftY(), lambda _: None)
+        builder.addDoubleProperty("RightX", lambda: self.getRightX(), lambda _: None)
+        builder.addDoubleProperty("RightY", lambda: self.getRightY(), lambda _: None)
         builder.addDoubleProperty(
-            "RightTrigger", lambda: self.getRightTriggerAxis(), lambda: None
+            "RightTrigger", lambda: self.getRightTriggerAxis(), lambda _: None
         )
         builder.addDoubleProperty(
-            "LeftTrigger", lambda: self.getLeftTriggerAxis(), lambda: None
+            "LeftTrigger", lambda: self.getLeftTriggerAxis(), lambda _: None
         )
-        builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda: None)
-        builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda: None)
+        builder.addDoubleProperty("POV_X", lambda: self.getPovX(), lambda _: None)
+        builder.addDoubleProperty("POV_Y", lambda: self.getPovY(), lambda _: None)

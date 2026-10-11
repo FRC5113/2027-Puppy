@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from mode_robot.modes import DisabledMode
 
-from subsystems.drivetrain import Drivetrain
+from subsystems.drivetrain.drivetrain import Drivetrain
 
 
 class Disabled(DisabledMode):
@@ -10,9 +10,6 @@ class Disabled(DisabledMode):
     The disabled mode implementation for the robot.
     """
     def __init__(self, drivetrain: Drivetrain) -> None:
-        """
-        Initializes the disabled mode with subsystem implementations.
-        """
         self._drivetrain = drivetrain
 
     def on_enter(self) -> None:

@@ -17,16 +17,16 @@ class DrivetrainBaseIO(ABC):
         ...
 
     @abstractmethod
-    def set_left_voltage(self, volts: float) -> None:
+    def set_left_percent(self, percent: float) -> None:
         """
-        Sets a raw voltage to the left side of the drivetrian.
+        Sets a percent to the left side of the drivetrain.
         """
         ...
 
     @abstractmethod
-    def set_right_voltage(self, volts: float) -> None:
+    def set_right_percent(self, percent: float) -> None:
         """
-        Sets a raw voltage to the right side of the drivetrian.
+        Sets a percent to the right side of the drivetrain.
         """
         ...
 

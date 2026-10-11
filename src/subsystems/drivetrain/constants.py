@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from wpimath.system.plant import DCMotor
 from wpimath.units import (
-    meters, 
-    meters_per_second, 
-    radians_per_second,
+    meters,
     kilograms, 
     kilogram_square_meters
 )
@@ -20,9 +18,6 @@ class DrivetrainConstants:
     wheel_radius: meters = 0.0805
     track_width: meters = 0.6
     gear_ratio: float = 10.71   # ratio between the motor & wheels
-
-    max_linear_speed: meters_per_second = 4.2
-    max_angular_speed: radians_per_second = 9.6
 
     class CAN:
         """

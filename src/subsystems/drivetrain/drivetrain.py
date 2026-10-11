@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from wpilib import RobotController
+from wpilib.drive import DifferentialDrive
 
-from wpimath.kinematics import DifferentialDriveKinematics, ChassisSpeeds
+from wpimath.kinematics import DifferentialDriveKinematics
 from wpimath.geometry import Pose2d, Pose3d
 from wpimath.units import percent
 
@@ -19,9 +19,6 @@ class Drivetrain(Subsystem):
     """
     The base of the robot that allows the bot to actually drive around.
     """
-    forward_scaler = SmartPreference(1.0)
-    angular_scaler = SmartPreference(1.0)
-
     def __init__(self, io: DrivetrainBaseIO) -> None:
         """
         Initializes the drivetrain with an IO implementation.
@@ -37,12 +34,12 @@ class Drivetrain(Subsystem):
             .getStructTopic("/SmartDashboard/Drivetrain/RobotPose3d", Pose3d) \
             .publish()
 
+        self._forward_scaler = SmartPreference("Drivetrain/ForwardScaler", 1.0)
+        self._angular_scaler = SmartPreference("Drivetrain/AngularScaler", 1.0)
+
     def get_pose(self) -> Pose2d | None:
         """
         Returns the robot pose, if applicable.
-
-        Returns `None` upon real hardware being used (there are no encoders to measure
-        the actual drivetrain pose).
         """
         return self._io.get_pose()
 
@@ -61,21 +58,10 @@ class Drivetrain(Subsystem):
         """
         Commands motor voltages to the left and right motors given a forward percent & angular percent.
         """
-        vx = forward_percent * DrivetrainConstants.max_linear_speed
-        omega = angular_percent * DrivetrainConstants.max_angular_speed
+        speeds = DifferentialDrive.arcadeDriveIK(forward_percent, angular_percent, squareInputs=False)
 
-        chassis = ChassisSpeeds(vx, 0.0, omega)
-        wheel_speeds = self._kinematics.toWheelSpeeds(chassis)
-        wheel_speeds.desaturate(DrivetrainConstants.max_linear_speed)
-
-        left_percent = wheel_speeds.left / DrivetrainConstants.max_linear_speed
-        right_percent = wheel_speeds.right / DrivetrainConstants.max_linear_speed
-
-        left_voltage = left_percent * RobotController.getBatteryVoltage()
-        right_voltage = right_percent * RobotController.getBatteryVoltage()
-
-        self._io.set_left_voltage(left_voltage)
-        self._io.set_right_voltage(right_voltage)
+        self._io.set_left_percent(speeds.left)
+        self._io.set_right_percent(speeds.right)
 
     def _publish_telemetry(self) -> None:
         """
@@ -89,8 +75,8 @@ class Drivetrain(Subsystem):
         """
         Updates the state of the subsystem after all values were requested.
         """
-        forward_pct = float(self.forward_scaler * self._forward_percent)    # type: ignore[unknownType]
-        angular_pct = float(self.angular_scaler * self._angular_percent)    # type: ignore[unknownType]
+        forward_pct = self._forward_scaler.get() * self._forward_percent
+        angular_pct = self._angular_scaler.get() * self._angular_percent
 
         self._command_motor_voltages(forward_pct, angular_pct)
 

@@ -47,7 +47,7 @@ class MagicSysIdRoutine:
     enabled = will_reset_to(False)
     output_volts = will_reset_to(0)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.timer = Timer()
         self.timed_out = False
         self.was_enabled = False
@@ -55,38 +55,38 @@ class MagicSysIdRoutine:
 
     def setup_sysid(
         self, config: SysIdRoutine.Config, mechanism: SysIdRoutine.Mechanism
-    ):
+    ) -> None:
         self.log = SysIdRoutineLog(mechanism.name)
         self.config = config
         self.mechanism = mechanism
         self.record_state = config.recordState or self.log.recordState
 
-    def quasistatic_forward(self):
+    def quasistatic_forward(self) -> None:
         self.enabled = True
         self.state = State.kQuasistaticForward
         self.outputVolts = self.timer.get() * self.config.rampRate
 
-    def quasistatic_reverse(self):
+    def quasistatic_reverse(self) -> None:
         self.enabled = True
         self.state = State.kQuasistaticReverse
         self.outputVolts = -self.timer.get() * self.config.rampRate
 
-    def dynamic_forward(self):
+    def dynamic_forward(self) -> None:
         self.enabled = True
         self.state = State.kDynamicForward
         self.outputVolts = self.config.stepVoltage
 
-    def dynamic_reverse(self):
+    def dynamic_reverse(self) -> None:
         self.enabled = True
         self.state = State.kDynamicReverse
         self.outputVolts = -self.config.stepVoltage
 
-    def on_start(self):
+    def on_start(self) -> None:
         self.timer.restart()
         self.timed_out = False
         self.was_enabled = True
 
-    def on_end(self):
+    def on_end(self) -> None:
         self.was_enabled = False
         self.mechanism.drive(0.0)
         self.record_state(State.kNone)
@@ -95,7 +95,7 @@ class MagicSysIdRoutine:
     def getName(self) -> str:
         return __name__
 
-    def execute(self):
+    def execute(self) -> None:
         if self.was_enabled:
             if self.timed_out:
                 return

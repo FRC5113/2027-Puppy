@@ -38,7 +38,7 @@ class LemonCameraSim(PhotonCameraSim):
         camera: LemonCamera,
         field_layout: AprilTagFieldLayout,
         fov: float = 100.0,
-        fps: int = 20.0,
+        fps: int = 20,
         avg_latency: float = 0.035,
         latency_std_dev: float = 0.005,
     ):
